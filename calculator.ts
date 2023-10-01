@@ -1,4 +1,3 @@
-#! /usr/bin/env node
 
 import * as inquirer from "inquirer";
 import chalk from "chalk";
