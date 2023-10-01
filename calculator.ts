@@ -1,68 +1,87 @@
-class Calculator {
-    private currentInput: number = 0;
-    private memory: number = 0;
-    private operator: string | null = null;
-  
-    constructor() {}
-  
-    // Set the current input value
-    setInput(value: number) {
-      this.currentInput = value;
+#! /usr/bin/env node
+
+import * as inquirer from "inquirer";
+import chalk from "chalk";
+import { input } from '@inquirer/prompts';
+
+
+// callculater operators
+
+
+enum Operator 
+{
+
+    ADD = "Addition",
+    SUBTRACT = "Subtraction",
+    MULTIPLY = "Multiplication",
+    DIVIDE = "Division",
+
+} 
+
+const prompt = inquirer.createPromptModule();
+
+function validateNumber(input: string): boolean | string 
+{ if (isNaN(parseFloat(input)))
+    {
+        return "Please enter a valid number"
     }
-  
-    // Add the current input to the memory
-    addToMemory() {
-      this.memory += this.currentInput;
-    }
-  
-    // Subtract the current input from the memory
-    subtractFromMemory() {
-      this.memory -= this.currentInput;
-    }
-  
-    // Set the operator for the pending operation
-    setOperator(operator: string) {
-      this.operator = operator;
-    }
-  
-    // Perform the pending operation
-    performOperation() {
-      if (this.operator === '+') {
-        this.currentInput += this.memory;
-      } else if (this.operator === '-') {
-        this.currentInput = this.memory - this.currentInput;
-      } else if (this.operator === '*') {
-        this.currentInput *= this.memory;
-      } else if (this.operator === '/') {
-        if (this.currentInput !== 0) {
-          this.currentInput = this.memory / this.currentInput;
-        } else {
-          throw new Error("Division by zero is not allowed.");
-        }
-      }
-      this.operator = null;
-      this.memory = 0;
-    }
-  
-    // Clear the calculator
-    clear() {
-      this.currentInput = 0;
-      this.memory = 0;
-      this.operator = null;
-    }
-  
-    // Get the current result
-    getResult() {
-        return this.currentInput;
-      }
-    }
+return true;
+}
+
+async function main()
+{
+    console.log(chalk.overline.underline.blue.bold.italic(`This is a simple CLI command Based Calculator:`))
+
+    const input = await prompt([
+        {
+            type: "input",
+            name: "num1",
+            message: "Please enter the first number:",
+            validate: validateNumber,
+        },
+        {
+            type: "rawlist", // or can be use list
+            name: "operator",
+            message: "Select an operation:",
+            choices: Object.values(Operator)
+        },
+        {
+            type: "input",
+            name: "num2",
+            message: "Please enter the second number:",
+            validate: validateNumber,
+
+        }   
+                    
+    ])
     
-    // Usage
-    const calculator = new Calculator();
-    calculator.setInput(67);
-    calculator.setOperator('+');
-    calculator.addToMemory();
-    calculator.setInput(3);
-    calculator.performOperation();
-    console.log("Result:", calculator.getResult()); // Should output 3
+    const num1 = parseFloat(input.num1);
+    const num2 = parseFloat(input.num2);
+    const selectedOperator = input.operator as Operator;
+    let result: number;
+
+    if (selectedOperator === Operator.ADD) 
+    {
+        result = num1 + num2;
+        console.log(chalk.green.bgRedBright(`Result is : ${result}`));
+    } else if (selectedOperator === Operator.DIVIDE) 
+    {
+        result = num1 / num2;
+        console.log(chalk.yellow.bgBlack(`Result is : ${result}`));
+    } else if (selectedOperator === Operator.MULTIPLY) 
+    {
+        result = num1 * num2;
+        console.log(chalk.blue.bgYellowBright(`Result is : ${result}`));
+    }
+
+    else if (selectedOperator === Operator.SUBTRACT) 
+    {
+        result = num1 - num2;
+        console.log(chalk.blue.bgYellowBright(`Result is : ${result}`));
+    }
+
+}
+
+export default main;
+main()
     
